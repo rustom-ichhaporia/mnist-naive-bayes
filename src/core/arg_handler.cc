@@ -18,55 +18,57 @@ using std::exit;
 using std::invalid_argument;
 using std::logic_error;
 using std::string;
+using naivebayes::Model;
+
 namespace naivebayes {
 
 void ArgHandler::EvaluateArguments(const int& argc, char* argv[]) {
-  vector<string> train_paths;
-  string model_save_path;
-  string load_path;
+  options_description description = GetOptionsDescription();
 
-  options_description desc("Allowed options");
-  desc.add_options()
-      ("help,h", "Prints the descriptions for the command line arguments.")
-      ("train,t", value<vector<string>>(&train_paths)->multitoken(),
-          "Trains the model. Takes two file paths,  first train images then train labels.")
-      ("save,s", value(&model_save_path), 
-          "Saves the model. Takes one file path, the location for the model cache to be saved.")
-      ("load,l", value(&load_path), 
-          "Loads the model from a given model cache file.");
-
+  // Parse the command line input variables and update the local variables
   variables_map vmap;
-  store(parse_command_line(argc, argv, desc), vmap);
+  store(parse_command_line(argc, argv, description), vmap); 
   notify(vmap);
 
+  // Raise errors if the user attemtps to load while also training or saving
   ConflictingOptions(vmap, "train", "load");
   ConflictingOptions(vmap, "save", "load");
 
-  if (vmap.count("help")) {
-    cout << desc;
+  if (vmap.count("help")) { // Display option information if requested
+    cout << description;
   } else {
-    ExecuteArguments(vmap);
+    ExecuteArguments(vmap); // Executes the arguments that were passed and validated
   }
 }
 
 void ArgHandler::ExecuteArguments(const variables_map& vmap) {
+  Model model;
   if (vmap.count("train") && vmap.count("save")) {
-
+    // Trains the model and then saves it with the given paths
+    model.Train(train_paths_[0], train_paths_[1]);
+    model.Save(save_path_);
   } else if (vmap.count("load")) {
-    
+    // Loads the model from a given cache file
+    model.Load(load_path_);
   } 
 }
 
-
-void ArgHandler::ConflictingOptions(const variables_map& vm, const char* opt1, const char* opt2) {
-  if (vm.count(opt1) && !vm[opt1].defaulted() && vm.count(opt2) && !vm[opt2].defaulted())
-    throw logic_error(string("Conflicting options '") + opt1 + "' and '" + opt2 + "'.");
+void ArgHandler::ConflictingOptions(const variables_map& vmap, const char* opt1, const char* opt2) {
+  // Specifies the conflicting options if they both exist in the variable map
+  if (vmap.count(opt1) && !vmap[opt1].defaulted() && vmap.count(opt2) && !vmap[opt2].defaulted())
+    throw logic_error(string("Conflicting options: \"") + opt1 + "\" and \"" + opt2 + "\".");
 }
 
-template <class Container> 
-const bool Contains(const Container& container, const typename Container::value_type& element) 
-{
-  return std::find(container.begin(), container.end(), element) != container.end();
+options_description ArgHandler::GetOptionsDescription() {
+  options_description description("Allowed options"); // Create an object with matching options
+  description.add_options()
+      ("help,h", "Prints the descriptions for the command line arguments.")
+      ("train,t", value<vector<string>>(&train_paths_)->multitoken(),
+          "Trains the model. Takes two file paths,  first train images then train labels.")
+      ("save,s", value(&save_path_), 
+          "Saves the model. Takes one file path, the location for the model cache to be saved.")
+      ("load,l", value(&load_path_), 
+          "Loads the model from a given model cache file.");
+  return description;
 }
-
 }  // namespace naivebayes
