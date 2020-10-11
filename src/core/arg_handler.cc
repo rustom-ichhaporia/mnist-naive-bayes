@@ -51,8 +51,9 @@ void ArgHandler::EvaluateArguments(const int& argc, char* argv[]) {
 
 void ArgHandler::ExecuteArguments(const variables_map& vmap) {
   if (vmap.count("train") && vmap.count("save")) {
-    
+
   } else if (vmap.count("load")) {
+    
   } 
 }
 
