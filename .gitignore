@@ -1,3 +1,7 @@
+__MACOSX/
+.vscode/
+data/
+
 # Created by https://www.gitignore.io/api/c++,cmake,clion
 # Edit at https://www.gitignore.io/?templates=c++,cmake,clion
 
