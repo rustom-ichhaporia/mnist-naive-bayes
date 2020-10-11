@@ -2,9 +2,16 @@
 #include <iostream>
 #include <string>
 #include <vector>
+#include <map>
+#include <tuple>
+#include <utility>
+#include "image_grid.h"
 
 using std::string;
 using std::vector;
+using std::map;
+using std::tuple;
+using std::pair;
 
 namespace naivebayes {
 
@@ -16,7 +23,8 @@ class Model {
 
  private:
 
-  vector<vector<int>> predictions_;
+  map<int, ImageGrid> cells;
+  pair<int, int> image_dimensions_;
 };
 
 }  // namespace naivebayes
