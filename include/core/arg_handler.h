@@ -49,6 +49,7 @@ class ArgHandler {
   vector<string> train_paths_;  // The paths to training images and labels
   string save_path_;            // The path to save the model cache
   string load_path_;  // The path to load a previously trained model cache
+  size_t image_height_; // The height in rows of the images passed in through a file
 };
 
 }  // namespace naivebayes

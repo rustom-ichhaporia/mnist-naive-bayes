@@ -45,7 +45,7 @@ void ArgHandler::ExecuteArguments(const variables_map& vmap) {
   Model model;
   if (vmap.count("train") && vmap.count("save")) {
     // Trains the model and then saves it with the given paths
-    model.Train(train_paths_[0], train_paths_[1]);
+    model.Train(train_paths_[0], train_paths_[1], image_height_);
     model.Save(save_path_);
   } else if (vmap.count("load")) {
     // Loads the model from a given cache file
@@ -68,7 +68,9 @@ options_description ArgHandler::GetOptionsDescription() {
       ("save,s", value(&save_path_), 
           "Saves the model. Takes one file path, the location for the model cache to be saved.")
       ("load,l", value(&load_path_), 
-          "Loads the model from a given model cache file.");
+          "Loads the model from a given model cache file.")
+      ("image-height,i", value(&image_height_), 
+          "Sets the height of each image in the training file.");
   return description;
 }
 }  // namespace naivebayes

@@ -13,11 +13,11 @@ using std::pair;
 using std::map;
 namespace naivebayes {
 
-double ImageGrid::GetProbability(pair<int, int> coordinate) {
+double ImageGrid::GetValue(pair<int, int> coordinate) {
   return probabilities_[coordinate];
 }
 
-void ImageGrid::SetProbability(pair<int, int> coordinate, double probability) {
+void ImageGrid::SetValue(pair<int, int> coordinate, double probability) {
   probabilities_[coordinate] = probability;
 }
 

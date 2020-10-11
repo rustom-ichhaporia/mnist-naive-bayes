@@ -14,8 +14,8 @@ namespace naivebayes {
 
 class ImageGrid {
  public:
-  double GetProbability(pair<int, int> coodinate);
-  void SetProbability(pair<int, int> coodinate, double probability);
+  double GetValue(pair<int, int> coodinate);
+  void SetValue(pair<int, int> coodinate, double probability);
 
  private:
   map<pair<int, int>, double> probabilities_;
