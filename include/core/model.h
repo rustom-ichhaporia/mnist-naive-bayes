@@ -25,39 +25,51 @@ class Model {
   void Train(const string& image_path, const string& label_path, size_t image_length);
   void Save(const string& save_path);
   void Load(const string& load_path);
+  int Predict(const ImageGrid& image);
 
-  // friend ifstream& operator>>(ifstream& input, map<int, ImageGrid>& image_cells) {
-  //   string current_line;
-  //   //size_t image_row_index = 0;
+  friend ifstream& operator>>(ifstream& input, Model& model) {
+    string current_line;
+    size_t image_row_index = 0;
+    size_t current_label_index = 0;
+    int current_label = model.labels_[current_label_index];
 
-  //   // while (getline(input, current_line)) {
-  //   //   if (image_row_index == model.image_length_) {
-  //   //     image_row_index = 0;
-  //   //     model.image_cells_.push
-  //   //   }
-  //   // }
+    while (getline(input, current_line)) {
+      ++image_row_index;
 
-  //   return input;
-  // }
+      model.IncrementGridRow(current_line, current_label, image_row_index);
 
-  // friend ifstream& operator>>(ifstream& input, vector<int>& label_vector) {
-  //   string current_line;
+      if (image_row_index == model.image_length_) {
+        ++current_label_index;
+        current_label = model.labels_[current_label_index];
+        image_row_index = 0;
+      }
+    }
 
-  //   while (getline(input, current_line)) {
-  //     label_vector.push_back(stoi(current_line));
-  //   }
-
-  //   return input;
-  // }
-
-  
-
-  // friend ifstream& operator<<(ofstream& output, Model& model) {
-  //   return
-  // }
+    return input;
+  }
 
  private:
-  map<int, ImageGrid> image_cells_;
+  const double kCellLaplaceSmoother = 1.0;
+  const double kClassLaplaceSmoother = 1.0;
+  const char kDarkChar = '#';
+  const double kDarkValue = 1.0;
+  const char kMediumChar = '+';
+  const double kMediumValue = 0.5;
+
+  double LikelihoodScores();
+
+  // vector<double> GetCellProbabilities(double presence);
+
+
+  double GetCellProbability(pair<int, int> coordinate, double presence, int classification);
+  double GetClassProbability(int classification);
+
+  void ReadLabels(string& label_path);
+  void ReadImages(string& image_path, string& image_length);
+
+  void IncrementGridRow(string& current_line, int current_label, size_t image_row_index);
+
+  map<int, ImageGrid> image_grid_;
   vector<int> labels_;
   size_t image_length_;
 

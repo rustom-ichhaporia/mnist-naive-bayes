@@ -21,4 +21,8 @@ void ImageGrid::SetValue(pair<int, int> coordinate, double probability) {
   probabilities_[coordinate] = probability;
 }
 
+void ImageGrid::IncrementValue(pair<int, int> coordinate, double increment) {
+  probabilities_[coordinate] += increment;
+}
+
 }  // namespace naivebayes

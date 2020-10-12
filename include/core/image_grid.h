@@ -16,6 +16,7 @@ class ImageGrid {
  public:
   double GetValue(pair<int, int> coodinate);
   void SetValue(pair<int, int> coodinate, double probability);
+  void IncrementValue(pair<int, int> coordinate, double increment);
 
  private:
   map<pair<int, int>, double> probabilities_;
