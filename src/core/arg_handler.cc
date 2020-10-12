@@ -10,8 +10,6 @@ using boost::program_options::notify;
 using boost::program_options::options_description;
 using boost::program_options::value;
 using boost::program_options::variables_map;
-using std::cerr;
-using std::clog;
 using std::cout;
 using std::endl;
 using std::exit;
@@ -45,6 +43,7 @@ void ArgHandler::ExecuteArguments(const variables_map& vmap) {
   Model model;
   if (vmap.count("train") && vmap.count("save")) {
     // Trains the model and then saves it with the given paths
+
     model.Train(train_paths_[0], train_paths_[1], image_height_);
     model.Save(save_path_);
   } else if (vmap.count("load")) {

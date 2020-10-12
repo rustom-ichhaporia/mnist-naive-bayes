@@ -6,7 +6,11 @@
 #include <tuple>
 #include <utility>
 #include <vector>
-
+#include <boost/archive/text_oarchive.hpp>
+#include <boost/archive/text_iarchive.hpp>
+#include <boost/serialization/map.hpp>
+#include <boost/serialization/vector.hpp>
+#include <boost/serialization/utility.hpp>
 #include "image_grid.h"
 
 using std::ifstream;
@@ -17,6 +21,7 @@ using std::string;
 using std::tuple;
 using std::vector;
 using std::stoi;
+using boost::serialization::access;
 
 namespace naivebayes {
 
@@ -48,6 +53,18 @@ class Model {
     return input;
   }
 
+    friend class access;
+    // When the class Archive corresponds to an output archive, the
+    // & operator is defined similar to <<.  Likewise, when the class Archive
+    // is a type of input archive the & operator is defined similar to >>.
+  template <class Archive>
+  void serialize(Archive& ar, const unsigned int version) {
+    ar& image_grids_;
+    ar& labels_;
+    ar& label_counts_;
+    ar& image_length_;
+  }
+
  private:
   const double kCellLaplaceSmoother = 1.0;
   const double kClassLaplaceSmoother = 1.0;
@@ -56,21 +73,27 @@ class Model {
   const char kMediumChar = '+';
   const double kMediumValue = 0.5;
 
+
+
   double LikelihoodScores();
 
   // vector<double> GetCellProbabilities(double presence);
 
 
+
+
   double GetCellProbability(pair<int, int> coordinate, double presence, int classification);
   double GetClassProbability(int classification);
 
-  void ReadLabels(string& label_path);
-  void ReadImages(string& image_path, string& image_length);
+  void ReadLabels(const string& label_path);
+  void ReadImages(const string& image_path, size_t image_length);
 
-  void IncrementGridRow(string& current_line, int current_label, size_t image_row_index);
+  void IncrementGridRow(const string& current_line, int current_label, size_t image_row_index);
+  void CountLabels();
 
-  map<int, ImageGrid> image_grid_;
+  map<int, ImageGrid> image_grids_;
   vector<int> labels_;
+  map<int, int> label_counts_;
   size_t image_length_;
 
   // pair<int, int> image_dimensions_;

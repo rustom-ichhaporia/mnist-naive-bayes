@@ -59,7 +59,7 @@ list(APPEND SOURCE_FILES    ${CORE_SOURCE_FILES}
 
 list(APPEND TEST_FILES tests/rename_this_test_file.cc)
 
-FIND_PACKAGE( Boost COMPONENTS program_options REQUIRED )
+FIND_PACKAGE( Boost COMPONENTS program_options serialization REQUIRED )
 INCLUDE_DIRECTORIES( ${Boost_INCLUDE_DIR} )
 
 
