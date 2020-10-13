@@ -25,16 +25,20 @@ ImageGrid::ImageGrid(size_t image_length) {
   }
 }
 
-double ImageGrid::GetValue(pair<int, int> coordinate) {
-  return probabilities_[coordinate];
+double ImageGrid::GetValue(const pair<int, int>& coordinate) const{
+  return probabilities_.at(coordinate);
 }
 
-void ImageGrid::SetValue(pair<int, int> coordinate, double probability) {
+void ImageGrid::SetValue(const pair<int, int>& coordinate, double probability) {
   probabilities_[coordinate] = probability;
 }
 
-void ImageGrid::IncrementValue(pair<int, int> coordinate, double increment) {
+void ImageGrid::IncrementValue(const pair<int, int>& coordinate, double increment) {
   probabilities_[coordinate] += increment;
+}
+
+map<pair<int, int>, double> ImageGrid::GetGrid() const {
+  return probabilities_;
 }
 
 }  // namespace naivebayes

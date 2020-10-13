@@ -19,9 +19,10 @@ class ImageGrid {
  public:
   ImageGrid();
   ImageGrid(size_t image_length);
-  double GetValue(pair<int, int> coodinate);
-  void SetValue(pair<int, int> coodinate, double probability);
-  void IncrementValue(pair<int, int> coordinate, double increment);
+  double GetValue(const pair<int, int>& coodinate) const;
+  void SetValue(const pair<int, int>& coodinate, double probability);
+  void IncrementValue(const pair<int, int>& coordinate, double increment);
+  map<pair<int, int>, double> GetGrid() const;
   friend class access;
   template <class Archive>
   void serialize(Archive& ar, const unsigned int version) {

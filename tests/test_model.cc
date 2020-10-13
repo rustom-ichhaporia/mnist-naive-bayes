@@ -1,6 +1,6 @@
 #include <catch2/catch.hpp>
 
-#include <core/arg_handler.h>
+#include <core/model.h>
 
 TEST_CASE("Check that 126 is the best class") {
   //REQUIRE(naivebayes::ArgHandler().GetBestClass() == "CS 126");

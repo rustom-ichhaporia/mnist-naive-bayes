@@ -22,6 +22,7 @@ using naivebayes::Model;
 int main(int argc, char* argv[]) {  
   ArgHandler arg_handler;
 
+  // ArgHandler evaluates arguments for legality and then executes them
   arg_handler.EvaluateArguments(argc, argv);
 
   return 0;

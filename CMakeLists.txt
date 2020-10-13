@@ -49,7 +49,6 @@ get_filename_component(APP_PATH "${CMAKE_CURRENT_SOURCE_DIR}/" ABSOLUTE)
 include("${CINDER_PATH}/proj/cmake/modules/cinderMakeApp.cmake")
 
 list(APPEND CORE_SOURCE_FILES   src/core/arg_handler.cc; 
-                                src/core/file_handler.cc; 
                                 src/core/model.cc;
                                 src/core/image_grid.cc)
 
@@ -57,7 +56,7 @@ list(APPEND SOURCE_FILES    ${CORE_SOURCE_FILES}
                             src/visualizer/naive_bayes_app.cc
                             src/visualizer/sketchpad.cc)
 
-list(APPEND TEST_FILES tests/rename_this_test_file.cc)
+list(APPEND TEST_FILES tests/test_model.cc)
 
 FIND_PACKAGE( Boost COMPONENTS program_options serialization REQUIRED )
 INCLUDE_DIRECTORIES( ${Boost_INCLUDE_DIR} )
