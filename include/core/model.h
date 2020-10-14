@@ -31,7 +31,7 @@ class Model {
              size_t image_length);
   void Save(const string& save_path);
   void Load(const string& load_path);
-  int Predict(const string& image_path);
+  vector<int> Predict(const string& image_path);
 
   friend ifstream& operator>>(ifstream& input, Model& model) {
     string current_line;
@@ -80,10 +80,11 @@ class Model {
                             int classification) const;
   double GetClassProbability(int classification) const;
 
-  void ReadLabels(const string& label_path);
+  void ReadTrainLabels(const string& label_path);
   void ReadTrainImages(const string& image_path, size_t image_length);
 
-  ImageGrid ReadTestImage(const string& image_path);
+  void ReadTestImages(const string& image_path);
+  void ReadTestLabels(const string& label_path);
 
   void IncrementGridRow(const string& current_line, int current_label,
                         size_t image_row_index);
@@ -94,7 +95,6 @@ class Model {
   map<int, int> label_counts_;
 
   vector<ImageGrid> test_images_;
-  vector<int> test_labels_;
 
   size_t image_length_;
 };

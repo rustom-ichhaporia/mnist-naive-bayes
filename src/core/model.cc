@@ -26,7 +26,7 @@ void Model::Train(const string& image_path, const string& label_path,
                   size_t image_length) {
   image_length_ = image_length;
 
-  ReadLabels(label_path);
+  ReadTrainLabels(label_path);
   ReadTrainImages(image_path, image_length);
 
   // Once images and labels have been loaded, then model is ready for prediction
@@ -50,18 +50,24 @@ void Model::Load(const string& load_path) {
   cout << "The model has been loaded from: " << load_path << endl;
 }
 
-int Model::Predict(const string& image_path) {
-  ImageGrid image = ReadTestImage(image_path);
+vector<int> Model::Predict(const string& image_path) {
+  ReadTestImages(image_path);
 
   map<int, double> likelihoods;
+  vector<int> test_labels;
 
-  // Get likelihood score for each class
-  for (auto classification : train_labels_) {
-    likelihoods[classification] = LikelihoodScore(image, classification);
+  for (ImageGrid image : test_images_) {
+    // Get likelihood score for each class
+    for (auto classification : train_labels_) {
+      likelihoods[classification] = LikelihoodScore(image, classification);
+    }
+
+    test_labels.push_back(likelihoods.rbegin()->first);
+    likelihoods.clear();
   }
 
   // Return index of largest likelihood score
-  return likelihoods.rbegin()->first;
+  return test_labels;
 }
 
 double Model::LikelihoodScore(const ImageGrid& image,
@@ -87,7 +93,7 @@ double Model::GetClassProbability(int classification) const {
          (label_counts_.size() * kClassLaplaceSmoother + train_labels_.size());
 }
 
-void Model::ReadLabels(const string& label_path) {
+void Model::ReadTrainLabels(const string& label_path) {
   ifstream label_stream(label_path);
 
   string current_line;
@@ -104,31 +110,32 @@ void Model::ReadTrainImages(const string& image_path, size_t image_length) {
   image_stream >> *this;
 }
 
-ImageGrid Model::ReadTestImage(const string& image_path) {
+void Model::ReadTestImages(const string& image_path) {
   ifstream image_stream(image_path);
 
   string current_line;
   size_t image_row_index = 0;
 
-
-  ImageGrid result;
-
+  ImageGrid current(image_length_);
 
   while (getline(image_stream, current_line)) {
     image_row_index++;
     for (size_t col = 0; col < current_line.size(); ++col) {
       if (current_line[col] == kDarkChar) {
-        result.IncrementValue(pair<int, int>(image_row_index - 1, col),
+        current.IncrementValue(pair<int, int>(image_row_index - 1, col),
                               kDarkValue);
       }
 
       else if (current_line[col] == kMediumChar) {
-        result.IncrementValue(pair<int, int>(image_row_index - 1, col),
+        current.IncrementValue(pair<int, int>(image_row_index - 1, col),
                               kMediumValue);
       }
     }
+    if (image_row_index == image_length_) {
+      test_images_.push_back(current);
+      current = ImageGrid(image_length_);
+    }
   }
-  return result;
 }
 
 void Model::IncrementGridRow(const string& current_line, int current_label,

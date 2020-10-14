@@ -1,20 +1,34 @@
-#include <catch2/catch.hpp>
-
 #include <core/model.h>
 
-TEST_CASE("Check that 126 is the best class") {
-  //REQUIRE(naivebayes::ArgHandler().GetBestClass() == "CS 126");
+#include <catch2/catch.hpp>
+
+using naivebayes::Model;
+using std::ifstream;
+
+// TEST_CASE("Operator overloading") {
+//   SECTION("Test invalid file") {
+//     Model model;
+//     ifstream input("../data/test/testimages");
+//     REQUIRE_THROWS("" >> model);
+//   }
+// }
+
+TEST_CASE("Model saving and loading") {
+  Model model;
+  size_t image_size = 2;
+  model.Train("/Users/rustomichhaporia/GitHub/Cinder/my-projects/naivebayes-rustom-ichhaporia/data/test/testimages", 
+  "/Users/rustomichhaporia/GitHub/Cinder/my-projects/naivebayes-rustom-ichhaporia/data/test/testlabels", image_size);
+  model.Save("/Users/rustomichhaporia/GitHub/Cinder/my-projects/naivebayes-rustom-ichhaporia/cache/test/testcache");
 }
 
-/*
-TODO: Rename this test file. You'll also need to modify CMakeLists.txt.
-
-You can (and should) create more test files; this project is too big
-for all tests to be in the same file. Remember that, for each file (foo.cc)
-containing non-trivial code, you should have a corresponding test file
-(foo_test.cc)
-
-Make sure to add any files that you create to CMakeLists.txt.
-
-TODO Delete this comment and the placeholder test before submitting your code.
-*/
+TEST_CASE("Model prediction") {
+  SECTION("Predict valid file") {
+    Model model;
+    model.Load("/Users/rustomichhaporia/GitHub/Cinder/my-projects/naivebayes-rustom-ichhaporia/cache/test/testcache");
+    vector<int> results = model.Predict("/Users/rustomichhaporia/GitHub/Cinder/my-projects/naivebayes-rustom-ichhaporia/data/test/testimages");
+    REQUIRE(results.size() == 3);
+    REQUIRE(results[0] == 0);
+    REQUIRE(results[1] == 1);
+    REQUIRE(results[2] == 2);
+  }
+}
