@@ -5,14 +5,6 @@
 using naivebayes::Model;
 using std::ifstream;
 
-// TEST_CASE("Operator overloading") {
-//   SECTION("Test invalid file") {
-//     Model model;
-//     ifstream input("../data/test/testimages");
-//     REQUIRE_THROWS("" >> model);
-//   }
-// }
-
 TEST_CASE("Model saving and loading") {
   Model model;
   size_t image_size = 2;

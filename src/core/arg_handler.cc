@@ -70,6 +70,7 @@ options_description ArgHandler::GetOptionsDescription() {
           "Loads the model from a given model cache file.")
       ("image-height,i", value(&image_height_), 
           "Sets the height of each image in the training file.");
+  // Prediction not yet implemented
   return description;
 }
 }  // namespace naivebayes

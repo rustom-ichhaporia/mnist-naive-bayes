@@ -23,9 +23,10 @@ ImageGrid::ImageGrid(size_t image_length) {
     throw invalid_argument("The input size of the image grid was negative, which is invalid.");
   }
 
-  image_length_ = image_length;
+  image_height_ = image_length;
 
-  for (size_t row = 0; row < image_length_; row++) {
+  // Initializes all square values with 0
+  for (size_t row = 0; row < image_height_; row++) {
     for (size_t col = 0; col < image_length; col++) {
       shade_presence_[pair<int, int>(row, col)] = 0;
     }

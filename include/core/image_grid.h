@@ -75,6 +75,6 @@ class ImageGrid {
   map<pair<int, int>, double>
       shade_presence_;  // The presence of shade or probability at a certain
                         // pixel or location
-  size_t image_length_; // The height of the image
+  size_t image_height_; // The height of the image
 };
 }  // namespace naivebayes
