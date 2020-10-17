@@ -1,6 +1,6 @@
 #pragma once
 
-#include "cinder/gl/gl.h"
+#include "Cinder/gl/gl.h"
 
 namespace naivebayes {
 

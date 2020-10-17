@@ -1,5 +1,8 @@
 cmake_minimum_required(VERSION 3.12 FATAL_ERROR)
 set(CMAKE_CXX_STANDARD 11)
+set(CMAKE_CXX_STANDARD_REQUIRED ON)
+
+
 project(naive-bayes)
 
 # This tells the compiler to not aggressively optimize and
@@ -48,16 +51,25 @@ get_filename_component(APP_PATH "${CMAKE_CURRENT_SOURCE_DIR}/" ABSOLUTE)
 
 include("${CINDER_PATH}/proj/cmake/modules/cinderMakeApp.cmake")
 
-list(APPEND CORE_SOURCE_FILES src/core/rename_this_file.cc)
+list(APPEND CORE_SOURCE_FILES   src/core/arg_handler.cc; 
+                                src/core/model.cc;
+                                src/core/image_grid.cc)
 
 list(APPEND SOURCE_FILES    ${CORE_SOURCE_FILES}
                             src/visualizer/naive_bayes_app.cc
                             src/visualizer/sketchpad.cc)
 
-list(APPEND TEST_FILES tests/rename_this_test_file.cc)
+list(APPEND TEST_FILES tests/test_model.cc;
+                            tests/test_main.cc
+                            tests/test_image_grid.cc)
+
+FIND_PACKAGE( Boost COMPONENTS program_options; serialization REQUIRED )
+INCLUDE_DIRECTORIES( ${Boost_INCLUDE_DIR} )
 
 add_executable(train-model apps/train_model_main.cc ${CORE_SOURCE_FILES})
 target_include_directories(train-model PRIVATE include)
+
+TARGET_LINK_LIBRARIES( train-model LINK_PUBLIC ${Boost_LIBRARIES} )
 
 ci_make_app(
         APP_NAME        sketchpad-classifier
@@ -71,7 +83,15 @@ ci_make_app(
         CINDER_PATH     ${CINDER_PATH}
         SOURCES         tests/test_main.cc ${SOURCE_FILES} ${TEST_FILES}
         INCLUDES        include
-        LIBRARIES       catch2
+        LIBRARIES       catch2 ${Boost_LIBRARIES}
+)
+
+set_property(TARGET naive-bayes-test PROPERTY C_STANDARD 11)
+set_target_properties(naive-bayes-test
+    PROPERTIES
+        CXX_STANDARD 11
+        CXX_STANDARD_REQUIRED YES
+        CXX_EXTENSIONS NO
 )
 
 if(MSVC)

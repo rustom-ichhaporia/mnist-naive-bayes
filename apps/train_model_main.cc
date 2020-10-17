@@ -1,13 +1,29 @@
+#include <core/arg_handler.h>
+#include <core/model.h>
+
+#include <boost/program_options.hpp>
 #include <iostream>
+#include <sstream>
 
-#include <core/rename_this_file.h>
+using boost::program_options::notify;
+using boost::program_options::options_description;
+using boost::program_options::value;
+using boost::program_options::variables_map;
+using std::cout;
+using std::endl;
+using std::invalid_argument;
+using std::logic_error;
+using std::string;
+using naivebayes::ArgHandler;
+using std::ifstream;
+using std::getline;
+using naivebayes::Model;
 
-// TODO: You may want to change main's signature to take in argc and argv
-int main() {
-  // TODO: Replace this with code that reads the training data, trains a model,
-  // and saves the trained model to a file.
+int main(int argc, char* argv[]) {  
+  ArgHandler arg_handler;
 
-  std::cout << "Welcome to " << naivebayes::Placeholder().GetBestClass()
-            << std::endl;
+  // ArgHandler evaluates arguments for legality and then executes them
+  arg_handler.EvaluateArguments(argc, argv);
+
   return 0;
 }
