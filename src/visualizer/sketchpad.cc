@@ -1,4 +1,7 @@
 #include <visualizer/sketchpad.h>
+#include <utility>
+
+using std::pair;
 
 namespace naivebayes {
 
@@ -11,7 +14,13 @@ Sketchpad::Sketchpad(const vec2& top_left_corner, size_t num_pixels_per_side,
     : top_left_corner_(top_left_corner),
       num_pixels_per_side_(num_pixels_per_side),
       pixel_side_length_(sketchpad_size / num_pixels_per_side),
-      brush_radius_(brush_radius) {}
+      brush_radius_(brush_radius) {
+        for (size_t row = 0; row < num_pixels_per_side; ++row) {
+          for (size_t col = 0; col < num_pixels_per_side; ++col) {
+            shaded_cells_[pair<size_t, size_t>(row, col)] = 0.0;
+          }
+        }
+      }
 
 void Sketchpad::Draw() const {
   for (size_t row = 0; row < num_pixels_per_side_; ++row) {
@@ -21,7 +30,8 @@ void Sketchpad::Draw() const {
 
       // TODO: Replace the if-statement below with an if-statement that checks
       // if the pixel at (row, col) is currently shaded
-      if (row * row + col * col <= 20 * 20) {
+      if (shaded_cells_.at(pair<size_t, size_t>(row, col)) == 1.0) {
+      // if () {
         ci::gl::color(ci::Color::gray(0.3f));
       } else {
         ci::gl::color(ci::Color("white"));
@@ -53,13 +63,46 @@ void Sketchpad::HandleBrush(const vec2& brush_screen_coords) {
       if (glm::distance(brush_sketchpad_coords, pixel_center) <=
           brush_radius_) {
         // TODO: Add code to shade in the pixel at (row, col)
+        ci::gl::color(ci::Color::gray(0.3f));
+        vec2 pixel_top_left = top_left_corner_ + vec2(col * pixel_side_length_,
+                                                      row * pixel_side_length_);
+
+        vec2 pixel_bottom_right =
+            pixel_top_left + vec2(pixel_side_length_, pixel_side_length_);
+        ci::Rectf pixel_bounding_box(pixel_top_left, pixel_bottom_right);
+
+        ci::gl::drawSolidRect(pixel_bounding_box);
+        shaded_cells_.at(pair<size_t, size_t>(row, col)) = 1.0;
       }
     }
   }
 }
 
 void Sketchpad::Clear() {
+  for (size_t row = 0; row < num_pixels_per_side_; ++row) {
+    for (size_t col = 0; col < num_pixels_per_side_; ++col) {
+
+        ci::gl::color(ci::Color("white"));
+
+      vec2 pixel_top_left = top_left_corner_ + vec2(col * pixel_side_length_,
+                                                    row * pixel_side_length_);
+
+      vec2 pixel_bottom_right =
+          pixel_top_left + vec2(pixel_side_length_, pixel_side_length_);
+      ci::Rectf pixel_bounding_box(pixel_top_left, pixel_bottom_right);
+
+      ci::gl::drawSolidRect(pixel_bounding_box);
+
+      ci::gl::color(ci::Color("black"));
+      ci::gl::drawStrokedRect(pixel_bounding_box);
+      shaded_cells_[pair<size_t, size_t>(row, col)] = 0;
+    }
+  }
   // TODO: implement this method
+}
+
+map<pair<size_t, size_t>, double> Sketchpad::GetShades() {
+  return shaded_cells_;
 }
 
 }  // namespace visualizer

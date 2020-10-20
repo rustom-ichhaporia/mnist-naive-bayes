@@ -61,6 +61,14 @@ class Model {
   vector<int> Predict(const string& image_path);
 
   /**
+   * @brief Predicts the classification of a given ImageGrid. 
+   * 
+   * @param image  the ImageGrid to classify
+   * @return int the predicted class
+   */
+  int Predict(const ImageGrid& image);
+
+  /**
    * @brief The operator overload of the stream extraction operator.
    *
    * @param input the input file stream

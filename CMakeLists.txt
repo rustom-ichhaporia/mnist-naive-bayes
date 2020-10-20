@@ -69,13 +69,14 @@ INCLUDE_DIRECTORIES( ${Boost_INCLUDE_DIR} )
 add_executable(train-model apps/train_model_main.cc ${CORE_SOURCE_FILES})
 target_include_directories(train-model PRIVATE include)
 
-TARGET_LINK_LIBRARIES( train-model LINK_PUBLIC ${Boost_LIBRARIES} )
+TARGET_LINK_LIBRARIES( train-model ${Boost_LIBRARIES} )
 
 ci_make_app(
         APP_NAME        sketchpad-classifier
         CINDER_PATH     ${CINDER_PATH}
         SOURCES         apps/cinder_app_main.cc ${SOURCE_FILES}
         INCLUDES        include
+        LIBRARIES       ${Boost_LIBRARIES}
 )
 
 ci_make_app(
@@ -87,12 +88,19 @@ ci_make_app(
 )
 
 set_property(TARGET naive-bayes-test PROPERTY C_STANDARD 11)
+set_target_properties(sketchpad-classifier   
+    PROPERTIES
+        CXX_STANDARD 11
+        CXX_STANDARD_REQUIRED YES
+        CXX_EXTENSIONS NO)
 set_target_properties(naive-bayes-test
     PROPERTIES
         CXX_STANDARD 11
         CXX_STANDARD_REQUIRED YES
         CXX_EXTENSIONS NO
 )
+
+TARGET_LINK_LIBRARIES( sketchpad-classifier ${Boost_LIBRARIES} )
 
 if(MSVC)
     set_property(TARGET naive-bayes-test APPEND_STRING PROPERTY LINK_FLAGS " /SUBSYSTEM:CONSOLE")

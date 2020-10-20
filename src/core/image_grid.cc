@@ -24,7 +24,7 @@ ImageGrid::ImageGrid(size_t image_length) {
   // Initializes all square values with 0
   for (size_t row = 0; row < image_height_; row++) {
     for (size_t col = 0; col < image_length; col++) {
-      shade_grid_[pair<int, int>(row, col)] = 0;
+      shade_grid_[pair<size_t, size_t>(row, col)] = 0;
     }
   }
 }
@@ -41,7 +41,7 @@ void ImageGrid::IncrementValue(const pair<int, int>& coordinate, double incremen
   shade_grid_.at(coordinate) += increment;
 }
 
-map<pair<int, int>, double> ImageGrid::GetGrid() const {
+map<pair<size_t, size_t>, double> ImageGrid::GetGrid() const {
   return shade_grid_;
 }
 }  // namespace naivebayes

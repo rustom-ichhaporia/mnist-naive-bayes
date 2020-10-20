@@ -19,6 +19,7 @@ using std::ofstream;
 using std::pair;
 using std::string;
 using std::vector;
+using std::max_element;
 
 namespace naivebayes {
 
@@ -58,16 +59,39 @@ vector<int> Model::Predict(const string& image_path) {
 
   for (ImageGrid image : test_images_) {
     // Get likelihood score for each class
-    for (auto classification : train_labels_) {
+    for (auto const &classification : train_labels_) {
       likelihoods[classification] = LikelihoodScore(image, classification);
     }
 
-    test_labels.push_back(likelihoods.rbegin()->first); // Insert the index of highest
+    map<int, double>::iterator best = max_element(
+        likelihoods.begin(), likelihoods.end(),
+        [](const pair<int, double>& a, const pair<int, double>& b) -> bool {
+          return a.second < b.second;
+        });
+
+    test_labels.push_back(best->first); // Insert the index of highest
     likelihoods.clear();
   }
 
   // Return index of largest likelihood score
   return test_labels;
+}
+
+int Model::Predict(const ImageGrid& image) {
+  // Same process as multiple image Predict method
+  map<int, double> likelihoods;
+
+  for (auto const &classification : train_labels_) {
+    likelihoods[classification] = LikelihoodScore(image, classification);
+  }
+
+  map<int, double>::iterator best = max_element(
+      likelihoods.begin(), likelihoods.end(),
+      [](const pair<int, double>& a, const pair<int, double>& b) -> bool {
+        return a.second < b.second;
+      });
+
+  return best->first;
 }
 
 ifstream& operator>>(ifstream& input, Model& model) {
@@ -105,14 +129,21 @@ double Model::LikelihoodScore(const ImageGrid& image,
 
   // Add the overall class probability
   sum += log(GetClassProbability(classification));
-  return 0;
+  return sum;
 }
 
 double Model::GetCellProbability(const pair<int, int>& coordinate,
-                                 double presence, int classification) const {                          
-  return (kCellLaplaceSmoother +
-          train_image_grids_.at(classification).GetValue(coordinate)) /
-         (2 * kCellLaplaceSmoother + label_counts_.at(classification));
+                                 double presence, int classification) const {
+  if (presence == 0.0) {
+    return (kCellLaplaceSmoother + label_counts_.at(classification) - 
+            train_image_grids_.at(classification).GetValue(coordinate)) /
+           (2 * kCellLaplaceSmoother + label_counts_.at(classification));
+           
+  } else {
+    return (kCellLaplaceSmoother +
+            train_image_grids_.at(classification).GetValue(coordinate)) /
+           (2 * kCellLaplaceSmoother + label_counts_.at(classification));
+  }
 }
 
 double Model::GetClassProbability(int classification) const {

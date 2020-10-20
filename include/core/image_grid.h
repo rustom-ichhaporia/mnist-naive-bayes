@@ -59,7 +59,7 @@ class ImageGrid {
    *
    * @return a map with key <int, int> pair and value double
    */
-  map<pair<int, int>, double> GetGrid() const;
+  map<pair<size_t, size_t>, double> GetGrid() const;
 
   /**
    * @brief A helper method used by Boost to serialize the ImageGrid
@@ -72,7 +72,7 @@ class ImageGrid {
   }
 
  private:
-  map<pair<int, int>, double>
+  map<pair<size_t, size_t>, double>
       shade_grid_;  // The presence of shade or probability at a certain
                         // pixel or location
   size_t image_height_; // The height of the image

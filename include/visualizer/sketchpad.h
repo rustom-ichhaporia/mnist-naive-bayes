@@ -1,6 +1,10 @@
 #pragma once
 
 #include "Cinder/gl/gl.h"
+#include <map>
+#include <utility>
+using std::map;
+using std::pair;
 
 namespace naivebayes {
 
@@ -49,6 +53,8 @@ class Sketchpad {
    */
   void Clear();
 
+  map<pair<size_t, size_t>, double> GetShades();
+
  private:
   glm::vec2 top_left_corner_;
 
@@ -58,6 +64,9 @@ class Sketchpad {
   double pixel_side_length_;
 
   double brush_radius_;
+
+  /** A map of all the pixels' shades, with 1 representing shaded and 0 unshaded */
+  map<pair<size_t, size_t>, double> shaded_cells_ ;
 };
 
 }  // namespace visualizer
