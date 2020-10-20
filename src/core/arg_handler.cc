@@ -50,6 +50,11 @@ void ArgHandler::ExecuteArguments(const variables_map& vmap) {
     // Loads the model from a given cache file
     model.Load(load_path_);
   } 
+
+  // Prints predictions for a given set of test data
+  if (vmap.count("predict")) {
+    model.Predict(predict_path_);
+  }
 }
 
 void ArgHandler::ConflictingOptions(const variables_map& vmap, const char* opt1, const char* opt2) {
@@ -68,6 +73,8 @@ options_description ArgHandler::GetOptionsDescription() {
           "Saves the model. Takes one file path, the location for the model cache to be saved.")
       ("load,l", value(&load_path_), 
           "Loads the model from a given model cache file.")
+      ("predict,p", value(&predict_path_), 
+          "Predicts the images at the given path and prints out predictions.")
       ("image-height,i", value(&image_height_), 
           "Sets the height of each image in the training file.");
   // Prediction not yet implemented

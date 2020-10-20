@@ -86,14 +86,13 @@ int Model::Predict(const ImageGrid& image) {
         return a.second < b.second;
       });
 
-  cout << "The predicted class of the image was: " << best-> first << endl;
+  cout << "The predicted class of the image was: " << best->first << endl;
 
   // Insert classification of best score
   return best->first;
 }
 
 double Model::Score(const string& image_path, const string& label_path) {
-  ReadTestLabels(label_path);
   vector<int> predictions = Predict(image_path);
 
   double score = 0.0;
