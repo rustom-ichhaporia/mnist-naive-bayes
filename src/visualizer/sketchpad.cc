@@ -25,13 +25,7 @@ Sketchpad::Sketchpad(const vec2& top_left_corner, size_t num_pixels_per_side,
 void Sketchpad::Draw() const {
   for (size_t row = 0; row < num_pixels_per_side_; ++row) {
     for (size_t col = 0; col < num_pixels_per_side_; ++col) {
-      // Currently, this will draw a quarter circle centered at the top-left
-      // corner with a radius of 20
-
-      // TODO: Replace the if-statement below with an if-statement that checks
-      // if the pixel at (row, col) is currently shaded
       if (shaded_cells_.at(pair<size_t, size_t>(row, col)) == 1.0) {
-      // if () {
         ci::gl::color(ci::Color::gray(0.3f));
       } else {
         ci::gl::color(ci::Color("white"));
@@ -62,7 +56,7 @@ void Sketchpad::HandleBrush(const vec2& brush_screen_coords) {
 
       if (glm::distance(brush_sketchpad_coords, pixel_center) <=
           brush_radius_) {
-        // TODO: Add code to shade in the pixel at (row, col)
+
         ci::gl::color(ci::Color::gray(0.3f));
         vec2 pixel_top_left = top_left_corner_ + vec2(col * pixel_side_length_,
                                                       row * pixel_side_length_);
@@ -82,7 +76,7 @@ void Sketchpad::Clear() {
   for (size_t row = 0; row < num_pixels_per_side_; ++row) {
     for (size_t col = 0; col < num_pixels_per_side_; ++col) {
 
-        ci::gl::color(ci::Color("white"));
+       ci::gl::color(ci::Color("white"));
 
       vec2 pixel_top_left = top_left_corner_ + vec2(col * pixel_side_length_,
                                                     row * pixel_side_length_);
@@ -98,7 +92,6 @@ void Sketchpad::Clear() {
       shaded_cells_[pair<size_t, size_t>(row, col)] = 0;
     }
   }
-  // TODO: implement this method
 }
 
 map<pair<size_t, size_t>, double> Sketchpad::GetShades() {

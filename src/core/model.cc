@@ -54,31 +54,26 @@ void Model::Load(const string& load_path) {
 vector<int> Model::Predict(const string& image_path) {
   ReadTestImages(image_path);
 
-  map<int, double> likelihoods;
   vector<int> test_labels;
 
-  for (ImageGrid image : test_images_) {
-    // Get likelihood score for each class
-    for (auto const &classification : train_labels_) {
-      likelihoods[classification] = LikelihoodScore(image, classification);
-    }
+  size_t test_image_count = test_images_.size();
 
-    map<int, double>::iterator best = max_element(
-        likelihoods.begin(), likelihoods.end(),
-        [](const pair<int, double>& a, const pair<int, double>& b) -> bool {
-          return a.second < b.second;
-        });
-
-    test_labels.push_back(best->first); // Insert the index of highest
-    likelihoods.clear();
+  if (max_test_images_ > test_images_.size()) {
+    cout << "Test images are capped due to time constraints." << endl;
+    cout << "Only the first " << max_test_images_ << " images will be classified." << endl;
+    test_image_count = max_test_images_;
   }
 
-  // Return index of largest likelihood score
+  for (size_t image_index = 0; image_index < test_image_count; ++image_index) {
+    test_labels.push_back(Predict(test_images_.at(image_index)));
+  }
+
+  // Return the predicted classes
   return test_labels;
 }
 
 int Model::Predict(const ImageGrid& image) {
-  // Same process as multiple image Predict method
+  // Get likelihood score for each class
   map<int, double> likelihoods;
 
   for (auto const &classification : train_labels_) {
@@ -91,7 +86,28 @@ int Model::Predict(const ImageGrid& image) {
         return a.second < b.second;
       });
 
+  cout << "The predicted class of the image was: " << best-> first << endl;
+
+  // Insert classification of best score
   return best->first;
+}
+
+double Model::Score(const string& image_path, const string& label_path) {
+  ReadTestLabels(label_path);
+  vector<int> predictions = Predict(image_path);
+
+  double score = 0.0;
+
+  for (size_t index = 0; index < predictions.size(); ++index) {
+    if (test_labels_.at(index) == predictions.at(index)) {
+      score += 1;
+    }
+  }
+  
+  score /= predictions.size();
+
+  cout << "The score of the model on the test data was: " << score << endl;
+  return score;
 }
 
 ifstream& operator>>(ifstream& input, Model& model) {
@@ -196,7 +212,19 @@ void Model::ReadTestImages(const string& image_path) {
     if (image_row_index == image_height_) {
       test_images_.push_back(current); // Add the image to the vector of test images, then reset
       current = ImageGrid(image_height_);
+      image_row_index = 0;
     }
+  }
+}
+
+void Model::ReadTestLabels(const string& label_path) {
+  ifstream label_stream(label_path);
+
+  string current_line;
+
+  // Read each line in by converting string to int
+  while (getline(label_stream, current_line)) {
+    test_labels_.push_back(stoi(current_line));
   }
 }
 

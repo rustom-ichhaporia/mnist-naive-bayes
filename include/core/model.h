@@ -69,6 +69,15 @@ class Model {
   int Predict(const ImageGrid& image);
 
   /**
+   * @brief Calculates the score of accurate classifications for a given test image set. 
+   * 
+   * @param image_path the string path to the test images
+   * @param label_path the string path to the lable images
+   * @return double the ratio of accurate classifications to total images
+   */
+  double Score(const string& image_path, const string& label_path);
+
+  /**
    * @brief The operator overload of the stream extraction operator.
    *
    * @param input the input file stream
@@ -78,7 +87,7 @@ class Model {
   friend ifstream& operator>>(ifstream& input, Model& model);
 
   /**
-   * @brief A helper class used by Boost to serialize the model.
+   * @brief A helper class used by Boost to serialize the model. Must be placed in header. 
    *
    */
   friend class access;
@@ -129,26 +138,33 @@ class Model {
   double GetClassProbability(int classification) const;
 
   /**
-   * @brief Reads the training labels from a file. 
-   * 
-   * @param label_path the path to the training labels
-   */
-  void ReadTrainLabels(const string& label_path);
-
-  /**
-   * @brief Reads the training images from a file. 
-   * 
+   * @brief Reads the training images from a file.
+   *
    * @param image_path the path to the trianing images
    * @param image_height the height of the training images in pixels
    */
   void ReadTrainImages(const string& image_path, size_t image_height);
 
   /**
-   * @brief Reads the test images from a file. 
-   * 
+   * @brief Reads the training labels from a file.
+   *
+   * @param label_path the path to the training labels
+   */
+  void ReadTrainLabels(const string& label_path);
+
+  /**
+   * @brief Reads the test images from a file.
+   *
    * @param image_path the path to the test images
    */
   void ReadTestImages(const string& image_path);
+
+  /**
+   * @brief Reads the test labels from a file.
+   *
+   * @param label_path the path to the test labels
+   */
+  void ReadTestLabels(const string& label_path);
 
   /**
    * @brief Increments the row of a grid when reading the training images. 
@@ -180,8 +196,12 @@ class Model {
   map<int, int> label_counts_;
   // A vector of the test images that are read in for classification
   vector<ImageGrid> test_images_;
+  // A vector of test labels that are to be compared to test images
+  vector<int> test_labels_;
   // The height of the images in pixels for the given model
   size_t image_height_;
+  // The limit of the number of images that can be scored due to time constraints
+  size_t max_test_images_ = 10;
 };
 
 }  // namespace naivebayes

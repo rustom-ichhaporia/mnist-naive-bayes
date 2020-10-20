@@ -1,10 +1,12 @@
 
-#define private public
+// #define private public
 #include <core/model.h>
-
+#include <iostream>
 #include <catch2/catch.hpp>
 
 using naivebayes::Model;
+using std::cout;
+using std::endl;
 
 TEST_CASE("Model saving and loading") {
   Model model;
@@ -44,5 +46,17 @@ TEST_CASE("Images") {
 }
 
 TEST_CASE("Mathematical correctness") {
+  SECTION("Predictions") {
 
+  }
+}
+
+TEST_CASE("Accuracy") {
+  Model model;
+  model.Load("/Users/rustomichhaporia/GitHub/Cinder/my-projects/naivebayes-rustom-ichhaporia/cache/mnistdatatraining/modelcache");
+
+  double accuracy = model.Score("/Users/rustomichhaporia/GitHub/Cinder/my-projects/naivebayes-rustom-ichhaporia/data/mnistdatavalidation/testimages", "/Users/rustomichhaporia/GitHub/Cinder/my-projects/naivebayes-rustom-ichhaporia/data/mnistdatavalidation/testlabels");
+  
+  cout << accuracy << endl;
+  REQUIRE(accuracy >= 0.5);
 }

@@ -40,8 +40,6 @@ void NaiveBayesApp::mouseDrag(ci::app::MouseEvent event) {
 void NaiveBayesApp::keyDown(ci::app::KeyEvent event) {
   switch (event.getCode()) {
     case ci::app::KeyEvent::KEY_RETURN: {
-      // ask your classifier to classify the image that's currently drawn on the
-      // sketchpad and update current_prediction_
       map<pair<size_t, size_t>, double> shades = sketchpad_.GetShades();
 
       ImageGrid image(kImageDimension);
