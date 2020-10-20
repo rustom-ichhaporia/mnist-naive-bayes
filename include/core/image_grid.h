@@ -68,12 +68,12 @@ class ImageGrid {
   friend class access;
   template <class Archive>
   void serialize(Archive& ar, const unsigned int version) {
-    ar& shade_presence_;
+    ar& shade_grid_;
   }
 
  private:
   map<pair<int, int>, double>
-      shade_presence_;  // The presence of shade or probability at a certain
+      shade_grid_;  // The presence of shade or probability at a certain
                         // pixel or location
   size_t image_height_; // The height of the image
 };

@@ -70,12 +70,35 @@ vector<int> Model::Predict(const string& image_path) {
   return test_labels;
 }
 
+ifstream& operator>>(ifstream& input, Model& model) {
+    string current_line;
+    size_t image_row_index = 0;
+    size_t current_label_index = 0;
+    int current_label = model.train_labels_[current_label_index];
+
+    while (getline(input, current_line)) {
+      ++image_row_index;  // 1 indexed for convenience
+
+      // Adds the values to the imagegrid
+      model.IncrementGridRow(current_line, current_label, image_row_index);
+
+      // Moves to the next image
+      if (image_row_index == model.image_height_) {
+        ++current_label_index;
+        current_label = model.train_labels_[current_label_index];
+        image_row_index = 0;
+      }
+    }
+
+    return input;
+  }
+
 double Model::LikelihoodScore(const ImageGrid& image,
                               int classification) const {
   double sum = 0.0;
 
   // For each coordinate, add the log of the cell probability
-  for (auto coordinate : train_image_grids_.at(classification).GetGrid()) {
+  for (auto const &coordinate : train_image_grids_.at(classification).GetGrid()) {
     sum += log(GetCellProbability(
         coordinate.first, image.GetValue(coordinate.first), classification));
   }
@@ -168,6 +191,11 @@ void Model::CountLabels() {
        ++label_index) {
     label_counts_[train_labels_[label_index]]++;
   }
+
+  InitializeImageGrids();
+}
+
+void Model::InitializeImageGrids() {
   for (size_t classification_index = 0;
        classification_index < label_counts_.size(); ++classification_index) {
     train_image_grids_[classification_index] = ImageGrid(image_height_);

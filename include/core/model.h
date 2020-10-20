@@ -67,28 +67,7 @@ class Model {
    * @param model a reference to the model to read into
    * @return ifstream& the given input file stream
    */
-  friend ifstream& operator>>(ifstream& input, Model& model) {
-    string current_line;
-    size_t image_row_index = 0;
-    size_t current_label_index = 0;
-    int current_label = model.train_labels_[current_label_index];
-
-    while (getline(input, current_line)) {
-      ++image_row_index;  // 1 indexed for convenience
-
-      // Adds the values to the imagegrid
-      model.IncrementGridRow(current_line, current_label, image_row_index);
-
-      // Moves to the next image
-      if (image_row_index == model.image_height_) {
-        ++current_label_index;
-        current_label = model.train_labels_[current_label_index];
-        image_row_index = 0;
-      }
-    }
-
-    return input;
-  }
+  friend ifstream& operator>>(ifstream& input, Model& model);
 
   /**
    * @brief A helper class used by Boost to serialize the model.
@@ -105,13 +84,13 @@ class Model {
 
  private:
   // The k value for laplace smoothing on cells
-  const double kCellLaplaceSmoother = 1.0;
+  static constexpr double kCellLaplaceSmoother = 1.0;
   // The k value for laplace smoothing on the class probabilities
-  const double kClassLaplaceSmoother = 1.0;
-  const char kDarkChar = '#'; // The character for full darkness (1)
-  const double kDarkValue = 1.0; // The darkness value for the given character
-  const char kMediumChar = '+'; // The character for half darkness (0.5)
-  const double kMediumValue = 0.5; // The darkness value for the given character
+  static constexpr double kClassLaplaceSmoother = 1.0;
+  static constexpr char kDarkChar = '#'; // The character for full darkness (1)
+  static constexpr double kDarkValue = 1.0; // The darkness value for the given character
+  static constexpr char kMediumChar = '+'; // The character for half darkness (0.5)
+  static constexpr double kMediumValue = 0.5; // The darkness value for the given character
 
   /**
    * @brief Calculates the likelihood score of a given image being a given class. 
@@ -178,6 +157,12 @@ class Model {
    * 
    */
   void CountLabels();
+
+  /**
+   * @brief Initializes an ImageGrid object for each class in the training labels. 
+   * 
+   */
+  void InitializeImageGrids();
 
   // An ImageGrid containing the frequencies of each pixel being shaded in the training images
   map<int, ImageGrid> train_image_grids_;
