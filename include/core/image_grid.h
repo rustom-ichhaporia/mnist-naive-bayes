@@ -72,12 +72,9 @@ class ImageGrid {
   }
 
  private:
-
-  vector < vector < double >> shade_grid_;
-
-  // map<pair<size_t, size_t>, double>
-  //     shade_grid_;  // The presence of shade or probability at a certain
-                        // pixel or location
-  size_t image_height_; // The height of the image
+  // The presence of shade or probability at a certain pixel or location
+  vector<vector<double>> shade_grid_;
+  // The height of the image
+  size_t image_height_;
 };
 }  // namespace naivebayes

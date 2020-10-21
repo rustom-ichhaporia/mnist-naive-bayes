@@ -1,17 +1,18 @@
 #include "core/image_grid.h"
-#include <iostream>
-#include <string>
-#include <vector>
-#include <map>
-#include <utility>
 
+#include <iostream>
+#include <map>
+#include <string>
+#include <utility>
+#include <vector>
+
+using std::invalid_argument;
+using std::map;
+using std::pair;
 using std::string;
 using std::vector;
 using std::map;
-using std::pair;
-using std::invalid_argument;
 
-using std::map;
 namespace naivebayes {
 
 ImageGrid::ImageGrid() {
@@ -21,14 +22,8 @@ ImageGrid::ImageGrid() {
 ImageGrid::ImageGrid(size_t image_length) {
   image_height_ = image_length;
 
-  shade_grid_ = vector<vector<double>>(image_height_, vector<double>(image_height_, 0));
-
   // Initializes all square values with 0
-  // for (size_t row = 0; row < image_height_; row++) {
-  //   for (size_t col = 0; col < image_length; col++) {
-  //     shade_grid_[row][col] = 0;
-  //   }
-  // }
+  shade_grid_ = vector<vector<double>>(image_height_, vector<double>(image_height_, 0));
 }
 
 double ImageGrid::GetValue(size_t x, size_t y) const {

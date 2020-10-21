@@ -76,7 +76,7 @@ void Sketchpad::Clear() {
   for (size_t row = 0; row < num_pixels_per_side_; ++row) {
     for (size_t col = 0; col < num_pixels_per_side_; ++col) {
 
-       ci::gl::color(ci::Color("white"));
+      ci::gl::color(ci::Color("white"));
 
       vec2 pixel_top_left = top_left_corner_ + vec2(col * pixel_side_length_,
                                                     row * pixel_side_length_);

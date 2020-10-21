@@ -1,29 +1,28 @@
 #include "core/model.h"
 
 #include <math.h>
-
 #include <iostream>
 #include <map>
+#include <numeric>
 #include <string>
 #include <utility>
 #include <vector>
-#include <numeric>
 
 using boost::archive::text_iarchive;
 using boost::archive::text_oarchive;
+using std::accumulate;
+using std::begin;
 using std::count;
 using std::cout;
+using std::end;
 using std::endl;
 using std::ifstream;
 using std::map;
+using std::max_element;
 using std::ofstream;
 using std::pair;
 using std::string;
 using std::vector;
-using std::max_element;
-using std::accumulate;
-using std::begin;
-using std::end;
 
 namespace naivebayes {
 
@@ -86,6 +85,7 @@ int Model::Predict(const ImageGrid& image) {
     likelihoods[classification] = LikelihoodScore(image, classification);
   }
 
+  // Get best score's index
   map<int, double>::iterator best = max_element(
       likelihoods.begin(), likelihoods.end(),
       [](const pair<int, double>& a, const pair<int, double>& b) -> bool {
@@ -104,6 +104,7 @@ double Model::Score(const string& image_path, const string& label_path) {
 
   double score = 0.0;
 
+  // Increment for each correct classification
   for (size_t index = 0; index < predictions.size(); ++index) {
     if (test_labels_.at(index) == predictions.at(index)) {
       score += 1;
@@ -143,8 +144,7 @@ vector<ImageGrid> Model::GetTrainImageGrids() const {
   return train_image_grids_;
 }
 
-double Model::LikelihoodScore(const ImageGrid& image,
-                              int classification) const {
+double Model::LikelihoodScore(const ImageGrid& image, int classification) const {
   double sum = 0.0;
 
   // For each coordinate, add the log of the cell probability
@@ -255,9 +255,12 @@ void Model::CountLabels() {
 }
 
 void Model::CalculateProbabilities() {
+  // Iterate over every cell
   for (int classification = 0; classification < label_counts_.size(); ++classification) {
     for (size_t row = 0; row < image_height_; ++row) {
       for (size_t col = 0; col < image_height_; ++col) {
+
+        // Apply formula for shaded cell probability with Laplace Smoothing
         train_image_grids_[classification].SetValue(row, col,
          (kCellLaplaceSmoother +
             train_image_grids_[classification].GetValue(row, col)) /

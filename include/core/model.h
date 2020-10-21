@@ -205,7 +205,7 @@ class Model {
   // The height of the images in pixels for the given model
   size_t image_height_;
   // The limit of the number of images that can be scored due to time
-  size_t max_test_images_ = 100;
+  size_t max_test_images_ = 1000;
 };
 
 }  // namespace naivebayes
