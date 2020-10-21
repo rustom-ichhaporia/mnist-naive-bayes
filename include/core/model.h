@@ -61,16 +61,17 @@ class Model {
   vector<int> Predict(const string& image_path);
 
   /**
-   * @brief Predicts the classification of a given ImageGrid. 
-   * 
+   * @brief Predicts the classification of a given ImageGrid.
+   *
    * @param image  the ImageGrid to classify
    * @return int the predicted class
    */
   int Predict(const ImageGrid& image);
 
   /**
-   * @brief Calculates the score of accurate classifications for a given test image set. 
-   * 
+   * @brief Calculates the score of accurate classifications for a given test
+   * image set.
+   *
    * @param image_path the string path to the test images
    * @param label_path the string path to the lable images
    * @return double the ratio of accurate classifications to total images
@@ -87,7 +88,15 @@ class Model {
   friend ifstream& operator>>(ifstream& input, Model& model);
 
   /**
-   * @brief A helper class used by Boost to serialize the model. Must be placed in header. 
+   * @brief Gets the Train Image Grids from the model for diagnostic purposes.
+   * 
+   * @return vector<ImageGrid> the training probabilities
+   */
+  vector<ImageGrid> GetTrainImageGrids() const;
+
+  /**
+   * @brief A helper class used by Boost to serialize the model. Must be placed
+   * in header.
    *
    */
   friend class access;
@@ -104,14 +113,18 @@ class Model {
   static constexpr double kCellLaplaceSmoother = 1.0;
   // The k value for laplace smoothing on the class probabilities
   static constexpr double kClassLaplaceSmoother = 1.0;
-  static constexpr char kDarkChar = '#'; // The character for full darkness (1)
-  static constexpr double kDarkValue = 1.0; // The darkness value for the given character
-  static constexpr char kMediumChar = '+'; // The character for half darkness (0.5)
-  static constexpr double kMediumValue = 0.5; // The darkness value for the given character
+  static constexpr char kDarkChar = '#';  // The character for full darkness (1)
+  static constexpr double kDarkValue =
+      1.0;  // The darkness value for the given character
+  static constexpr char kMediumChar =
+      '+';  // The character for half darkness (0.5)
+  static constexpr double kMediumValue =
+      0.5;  // The darkness value for the given character
 
   /**
-   * @brief Calculates the likelihood score of a given image being a given class. 
-   * 
+   * @brief Calculates the likelihood score of a given image being a given
+   * class.
+   *
    * @param image the ImageGrid object to classify
    * @param classification the test classification
    * @return double the logged likelihood score
@@ -119,19 +132,20 @@ class Model {
   double LikelihoodScore(const ImageGrid& image, int classification) const;
 
   /**
-   * @brief Calculate the probability of a certain cell being shaded in a given classification. 
-   * 
+   * @brief Calculate the probability of a certain cell being shaded in a given
+   * classification.
+   *
    * @param coordinate the coordinate of the cell
    * @param presence the shading level of the cell
    * @param classification the classification to test
    * @return double the probability that the given cell is shaded
    */
-  double GetCellProbability(const pair<int, int>& coordinate, double presence,
+  double GetCellProbability(size_t x, size_t y, double presence,
                             int classification) const;
 
   /**
-   * @brief Calculate the probability of an image being a certain class. 
-   * 
+   * @brief Calculate the probability of an image being a certain class.
+   *
    * @param classification the class to test
    * @return double the probability of the image being a part of the given class
    */
@@ -167,8 +181,8 @@ class Model {
   void ReadTestLabels(const string& label_path);
 
   /**
-   * @brief Increments the row of a grid when reading the training images. 
-   * 
+   * @brief Increments the row of a grid when reading the training images.
+   *
    * @param current_line the current line of the grid
    * @param current_label the current label of the image
    * @param image_row_index the row of the image
@@ -177,19 +191,21 @@ class Model {
                         size_t image_row_index);
 
   /**
-   * @brief Counts the number of labels in each category for a member variable. 
-   * 
+   * @brief Counts the number of labels in each category for a member variable.
+   *
    */
   void CountLabels();
 
   /**
-   * @brief Initializes an ImageGrid object for each class in the training labels. 
-   * 
+   * @brief Calculates the probabilities of being shaded for each classification
+   * and each cell when training the model.
+   *
    */
-  void InitializeImageGrids();
+  void CalculateProbabilities();
 
-  // An ImageGrid containing the frequencies of each pixel being shaded in the training images
-  map<int, ImageGrid> train_image_grids_;
+  // An ImageGrid containing the frequencies of each pixel being shaded in the
+  // training images
+  vector<ImageGrid> train_image_grids_;
   // A vector of the labels of the training images
   vector<int> train_labels_;
   // A map of the counts of the labels based on each classification
@@ -200,7 +216,7 @@ class Model {
   vector<int> test_labels_;
   // The height of the images in pixels for the given model
   size_t image_height_;
-  // The limit of the number of images that can be scored due to time constraints
+  // The limit of the number of images that can be scored due to time
   size_t max_test_images_ = 100;
 };
 

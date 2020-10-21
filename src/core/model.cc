@@ -7,6 +7,7 @@
 #include <string>
 #include <utility>
 #include <vector>
+#include <numeric>
 
 using boost::archive::text_iarchive;
 using boost::archive::text_oarchive;
@@ -20,6 +21,9 @@ using std::pair;
 using std::string;
 using std::vector;
 using std::max_element;
+using std::accumulate;
+using std::begin;
+using std::end;
 
 namespace naivebayes {
 
@@ -29,6 +33,8 @@ void Model::Train(const string& image_path, const string& label_path,
 
   ReadTrainLabels(label_path); 
   ReadTrainImages(image_path, image_length);
+
+  CalculateProbabilities();
 
   // Once images and labels have been loaded, then model is ready for prediction
   cout << "The model has been trained using images from: " << image_path
@@ -58,7 +64,7 @@ vector<int> Model::Predict(const string& image_path) {
 
   size_t test_image_count = test_images_.size();
 
-  if (max_test_images_ > test_images_.size()) {
+  if (max_test_images_ < test_images_.size()) {
     cout << "Test images are capped due to time constraints." << endl;
     cout << "Only the first " << max_test_images_ << " images will be classified." << endl;
     test_image_count = max_test_images_;
@@ -94,6 +100,7 @@ int Model::Predict(const ImageGrid& image) {
 
 double Model::Score(const string& image_path, const string& label_path) {
   vector<int> predictions = Predict(image_path);
+  ReadTestLabels(label_path);
 
   double score = 0.0;
 
@@ -110,36 +117,46 @@ double Model::Score(const string& image_path, const string& label_path) {
 }
 
 ifstream& operator>>(ifstream& input, Model& model) {
-    string current_line;
-    size_t image_row_index = 0;
-    size_t current_label_index = 0;
-    int current_label = model.train_labels_[current_label_index];
+  string current_line;
+  size_t image_row_index = 0;
+  size_t current_label_index = 0;
+  int current_label = model.train_labels_[current_label_index];
 
-    while (getline(input, current_line)) {
-      ++image_row_index;  // 1 indexed for convenience
+  while (getline(input, current_line)) {
+    ++image_row_index;  // 1 indexed for convenience
 
-      // Adds the values to the imagegrid
-      model.IncrementGridRow(current_line, current_label, image_row_index);
+    // Adds the values to the imagegrid
+    model.IncrementGridRow(current_line, current_label, image_row_index);
 
-      // Moves to the next image
-      if (image_row_index == model.image_height_) {
-        ++current_label_index;
-        current_label = model.train_labels_[current_label_index];
-        image_row_index = 0;
-      }
+    // Moves to the next image
+    if (image_row_index == model.image_height_) {
+      ++current_label_index;
+      current_label = model.train_labels_[current_label_index];
+      image_row_index = 0;
     }
-
-    return input;
   }
+
+  return input;
+}
+
+
+vector<ImageGrid> Model::GetTrainImageGrids() const {
+  return train_image_grids_;
+}
 
 double Model::LikelihoodScore(const ImageGrid& image,
                               int classification) const {
   double sum = 0.0;
 
   // For each coordinate, add the log of the cell probability
-  for (auto const &coordinate : train_image_grids_.at(classification).GetGrid()) {
-    sum += log(GetCellProbability(
-        coordinate.first, image.GetValue(coordinate.first), classification));
+  for (size_t row = 0; row < image_height_; ++row) {
+    for (size_t col = 0; col < image_height_; ++col) {
+      if (image.GetValue(row, col) > 0.5) {
+        sum += log(train_image_grids_.at(classification).GetValue(row, col));
+      } else {
+        sum += log(1 - train_image_grids_.at(classification).GetValue(row, col));
+      }
+    }
   }
 
   // Add the overall class probability
@@ -147,16 +164,16 @@ double Model::LikelihoodScore(const ImageGrid& image,
   return sum;
 }
 
-double Model::GetCellProbability(const pair<int, int>& coordinate,
+double Model::GetCellProbability(size_t x, size_t y,
                                  double presence, int classification) const {
   if (presence == 0.0) {
     return (kCellLaplaceSmoother + label_counts_.at(classification) - 
-            train_image_grids_.at(classification).GetValue(coordinate)) /
+            train_image_grids_.at(classification).GetValue(x, y)) /
            (2 * kCellLaplaceSmoother + label_counts_.at(classification));
            
   } else {
     return (kCellLaplaceSmoother +
-            train_image_grids_.at(classification).GetValue(coordinate)) /
+            train_image_grids_.at(classification).GetValue(x, y)) /
            (2 * kCellLaplaceSmoother + label_counts_.at(classification));
   }
 }
@@ -177,6 +194,7 @@ void Model::ReadTrainLabels(const string& label_path) {
   }
 
   CountLabels(); // Count the frequency of each label
+  train_image_grids_ = vector<ImageGrid>(label_counts_.size(), ImageGrid(image_height_));
 }
 
 void Model::ReadTrainImages(const string& image_path, size_t image_length) {
@@ -199,12 +217,12 @@ void Model::ReadTestImages(const string& image_path) {
     image_row_index++;
     for (size_t col = 0; col < current_line.size(); ++col) {
       if (current_line[col] == kDarkChar) {
-        current.IncrementValue(pair<int, int>(image_row_index - 1, col),
+        current.IncrementValue(image_row_index - 1, col,
                               kDarkValue);
       }
 
       else if (current_line[col] == kMediumChar) {
-        current.IncrementValue(pair<int, int>(image_row_index - 1, col),
+        current.IncrementValue(image_row_index - 1, col,
                               kMediumValue);
       }
     }
@@ -233,12 +251,12 @@ void Model::IncrementGridRow(const string& current_line, int current_label,
   for (size_t col = 0; col < current_line.size(); ++col) {
     if (current_line[col] == kDarkChar) {
       train_image_grids_[current_label].IncrementValue(
-          pair<int, int>(image_row_index - 1, col), kDarkValue);
+          image_row_index - 1, col, kDarkValue);
     }
 
     else if (current_line[col] == kMediumChar) {
       train_image_grids_[current_label].IncrementValue(
-          pair<int, int>(image_row_index - 1, col), kMediumValue);
+          image_row_index - 1, col, kMediumValue);
     }
   }
 }
@@ -249,15 +267,20 @@ void Model::CountLabels() {
        ++label_index) {
     label_counts_[train_labels_[label_index]]++;
   }
-
-  InitializeImageGrids();
 }
 
-void Model::InitializeImageGrids() {
-  for (size_t classification_index = 0;
-       classification_index < label_counts_.size(); ++classification_index) {
-    train_image_grids_[classification_index] = ImageGrid(image_height_);
+void Model::CalculateProbabilities() {
+  for (int classification = 0; classification < label_counts_.size(); ++classification) {
+    for (size_t row = 0; row < image_height_; ++row) {
+      for (size_t col = 0; col < image_height_; ++col) {
+        train_image_grids_[classification].SetValue(row, col,
+         (kCellLaplaceSmoother +
+            train_image_grids_[classification].GetValue(row, col)) /
+           (2 * kCellLaplaceSmoother + label_counts_.at(classification)));
+      }
+    }
   }
 }
+
 
 }  // namespace naivebayes

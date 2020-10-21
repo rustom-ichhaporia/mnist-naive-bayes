@@ -21,27 +21,29 @@ ImageGrid::ImageGrid() {
 ImageGrid::ImageGrid(size_t image_length) {
   image_height_ = image_length;
 
+  shade_grid_ = vector<vector<double>>(image_height_, vector<double>(image_height_, 0));
+
   // Initializes all square values with 0
-  for (size_t row = 0; row < image_height_; row++) {
-    for (size_t col = 0; col < image_length; col++) {
-      shade_grid_[pair<size_t, size_t>(row, col)] = 0;
-    }
-  }
+  // for (size_t row = 0; row < image_height_; row++) {
+  //   for (size_t col = 0; col < image_length; col++) {
+  //     shade_grid_[row][col] = 0;
+  //   }
+  // }
 }
 
-double ImageGrid::GetValue(const pair<int, int>& coordinate) const{
-  return shade_grid_.at(coordinate);
+double ImageGrid::GetValue(size_t x, size_t y) const {
+  return shade_grid_[x][y];
 }
 
-void ImageGrid::SetValue(const pair<int, int>& coordinate, double probability) {
-  shade_grid_.at(coordinate) = probability;
+void ImageGrid::SetValue(size_t x, size_t y, double probability) {
+  shade_grid_[x][y] = probability;
 }
 
-void ImageGrid::IncrementValue(const pair<int, int>& coordinate, double increment) {
-  shade_grid_.at(coordinate) += increment;
+void ImageGrid::IncrementValue(size_t x, size_t y, double increment) {
+  shade_grid_[x][y] += increment;
 }
 
-map<pair<size_t, size_t>, double> ImageGrid::GetGrid() const {
+vector<vector<double>> ImageGrid::GetGrid() const {
   return shade_grid_;
 }
 }  // namespace naivebayes

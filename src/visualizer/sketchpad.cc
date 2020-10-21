@@ -1,7 +1,11 @@
 #include <visualizer/sketchpad.h>
 #include <utility>
+#include <vector>
+#include <core/image_grid.h>
 
 using std::pair;
+using std::vector;
+using naivebayes::ImageGrid;
 
 namespace naivebayes {
 
@@ -15,17 +19,13 @@ Sketchpad::Sketchpad(const vec2& top_left_corner, size_t num_pixels_per_side,
       num_pixels_per_side_(num_pixels_per_side),
       pixel_side_length_(sketchpad_size / num_pixels_per_side),
       brush_radius_(brush_radius) {
-        for (size_t row = 0; row < num_pixels_per_side; ++row) {
-          for (size_t col = 0; col < num_pixels_per_side; ++col) {
-            shaded_cells_[pair<size_t, size_t>(row, col)] = 0.0;
-          }
-        }
+        grid_ = ImageGrid(num_pixels_per_side);
       }
 
 void Sketchpad::Draw() const {
   for (size_t row = 0; row < num_pixels_per_side_; ++row) {
     for (size_t col = 0; col < num_pixels_per_side_; ++col) {
-      if (shaded_cells_.at(pair<size_t, size_t>(row, col)) == 1.0) {
+      if (grid_.GetValue(row, col) == 1.0) {
         ci::gl::color(ci::Color::gray(0.3f));
       } else {
         ci::gl::color(ci::Color("white"));
@@ -66,7 +66,7 @@ void Sketchpad::HandleBrush(const vec2& brush_screen_coords) {
         ci::Rectf pixel_bounding_box(pixel_top_left, pixel_bottom_right);
 
         ci::gl::drawSolidRect(pixel_bounding_box);
-        shaded_cells_.at(pair<size_t, size_t>(row, col)) = 1.0;
+        grid_.SetValue(row, col, 1.0);
       }
     }
   }
@@ -89,13 +89,13 @@ void Sketchpad::Clear() {
 
       ci::gl::color(ci::Color("black"));
       ci::gl::drawStrokedRect(pixel_bounding_box);
-      shaded_cells_[pair<size_t, size_t>(row, col)] = 0;
+      grid_.SetValue(row, col, 0.0);
     }
   }
 }
 
-map<pair<size_t, size_t>, double> Sketchpad::GetShades() {
-  return shaded_cells_;
+ImageGrid Sketchpad::GetShades() const {
+  return grid_;
 }
 
 }  // namespace visualizer

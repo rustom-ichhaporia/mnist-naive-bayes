@@ -40,17 +40,7 @@ void NaiveBayesApp::mouseDrag(ci::app::MouseEvent event) {
 void NaiveBayesApp::keyDown(ci::app::KeyEvent event) {
   switch (event.getCode()) {
     case ci::app::KeyEvent::KEY_RETURN: {
-      map<pair<size_t, size_t>, double> shades = sketchpad_.GetShades();
-
-      ImageGrid image(kImageDimension);
-
-      for (size_t row = 0; row < kImageDimension; ++row) {
-        for (size_t col = 0; col < kImageDimension; ++col) {
-          image.SetValue(pair<size_t, size_t>(row, col), shades.at(pair<size_t, size_t>(row, col)));
-        }
-      }
-
-      current_prediction_ = model_.Predict(image);
+      current_prediction_ = model_.Predict(sketchpad_.GetShades());
 
       break;
     }

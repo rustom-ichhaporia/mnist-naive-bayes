@@ -24,33 +24,33 @@ TEST_CASE("Value functions") {
 
   SECTION("Get value") {
     SECTION("Valid") {
-      REQUIRE(image.GetValue(pair<int, int>(0, 0)) == 0);
+      REQUIRE(image.GetValue(0, 0) == 0);
     }
 
     SECTION("Invalid") {
-      REQUIRE_THROWS(image.GetValue(pair<int, int>(1, 1)) == 0);
+      REQUIRE_THROWS(image.GetValue(1, 1) == 0);
     }
   }
 
   SECTION("Set value") {
     SECTION("Valid") {
-      image.SetValue(pair<int, int>(0, 0), -1);
-      REQUIRE(image.GetValue(pair<int, int>(0, 0)) == -1);
+      image.SetValue(0, 0, -1);
+      REQUIRE(image.GetValue(0, 0) == -1);
     }
 
     SECTION("Invalid") {
-      REQUIRE_THROWS(image.SetValue(pair<int, int>(1, 1), 2));
+      REQUIRE_THROWS(image.SetValue(1, 1, 2));
     }
   }
 
   SECTION("Increment value") {
     SECTION("Valid") {
-      image.IncrementValue(pair<int, int>(0, 0), 1.5);
-      REQUIRE(image.GetValue(pair<int, int>(0, 0)) == 1.5);
+      image.IncrementValue(0, 0, 1.5);
+      REQUIRE(image.GetValue(0, 0) == 1.5);
     }
 
     SECTION("Invalid") {
-      REQUIRE_THROWS(image.IncrementValue(pair<int, int>(1, 1), 1.5));
+      REQUIRE_THROWS(image.IncrementValue(1, 1, 1.5));
     }
   }
 
