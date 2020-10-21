@@ -104,11 +104,14 @@ double Model::Score(const string& image_path, const string& label_path) {
 
   double score = 0.0;
 
+  confusion_matrix_ = vector<vector<int>>(label_counts_.size(), vector<int>(label_counts_.size(), 0));
+
   // Increment for each correct classification
   for (size_t index = 0; index < predictions.size(); ++index) {
     if (test_labels_.at(index) == predictions.at(index)) {
       score += 1;
     }
+    confusion_matrix_[test_labels_.at(index)][predictions.at(index)]++;
   }
   
   score /= predictions.size();
@@ -270,5 +273,17 @@ void Model::CalculateProbabilities() {
   }
 }
 
+void Model::PrintConfusionMatrix() {
+  for (int classification = 0; classification < label_counts_.size(); ++classification) {
+    cout << classification << "\t";
+  }
+  cout << endl;
+  for (size_t row = 0; row < confusion_matrix_.size(); ++row) {
+    for (size_t col = 0; col < confusion_matrix_[0].size(); ++col) {
+      cout << confusion_matrix_[row][col] << "\t";
+    }
+    cout << endl;
+  }
+}
 
 }  // namespace naivebayes

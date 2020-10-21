@@ -191,6 +191,8 @@ class Model {
    */
   void CalculateProbabilities();
 
+  void PrintConfusionMatrix();
+
   // An ImageGrid containing the frequencies of each pixel being shaded in the
   // training images
   vector<ImageGrid> train_image_grids_;
@@ -206,6 +208,8 @@ class Model {
   size_t image_height_;
   // The limit of the number of images that can be scored due to time
   size_t max_test_images_ = 1000;
+  // A confusion matrix for testing
+  vector<vector<int>> confusion_matrix_;
 };
 
 }  // namespace naivebayes
