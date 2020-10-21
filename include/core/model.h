@@ -207,7 +207,7 @@ class Model {
   // The height of the images in pixels for the given model
   size_t image_height_;
   // The limit of the number of images that can be scored due to time
-  size_t max_test_images_ = 1000;
+  size_t max_test_images_ = 100;
   // A confusion matrix for testing
   vector<vector<int>> confusion_matrix_;
 };
