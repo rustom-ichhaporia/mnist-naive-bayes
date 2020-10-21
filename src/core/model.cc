@@ -139,7 +139,6 @@ ifstream& operator>>(ifstream& input, Model& model) {
   return input;
 }
 
-
 vector<ImageGrid> Model::GetTrainImageGrids() const {
   return train_image_grids_;
 }
@@ -162,20 +161,6 @@ double Model::LikelihoodScore(const ImageGrid& image,
   // Add the overall class probability
   sum += log(GetClassProbability(classification));
   return sum;
-}
-
-double Model::GetCellProbability(size_t x, size_t y,
-                                 double presence, int classification) const {
-  if (presence == 0.0) {
-    return (kCellLaplaceSmoother + label_counts_.at(classification) - 
-            train_image_grids_.at(classification).GetValue(x, y)) /
-           (2 * kCellLaplaceSmoother + label_counts_.at(classification));
-           
-  } else {
-    return (kCellLaplaceSmoother +
-            train_image_grids_.at(classification).GetValue(x, y)) /
-           (2 * kCellLaplaceSmoother + label_counts_.at(classification));
-  }
 }
 
 double Model::GetClassProbability(int classification) const {

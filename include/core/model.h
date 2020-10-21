@@ -19,7 +19,6 @@ using std::ifstream;
 using std::map;
 using std::ofstream;
 using std::pair;
-using std::stoi;
 using std::string;
 using std::vector;
 
@@ -89,10 +88,28 @@ class Model {
 
   /**
    * @brief Gets the Train Image Grids from the model for diagnostic purposes.
-   * 
+   *
    * @return vector<ImageGrid> the training probabilities
    */
   vector<ImageGrid> GetTrainImageGrids() const;
+
+  /**
+   * @brief Calculates the likelihood score of a given image being a given
+   * class.
+   *
+   * @param image the ImageGrid object to classify
+   * @param classification the test classification
+   * @return double the logged likelihood score
+   */
+  double LikelihoodScore(const ImageGrid& image, int classification) const;
+
+  /**
+   * @brief Calculate the probability of an image being a certain class.
+   *
+   * @param classification the class to test
+   * @return double the probability of the image being a part of the given class
+   */
+  double GetClassProbability(int classification) const;
 
   /**
    * @brief A helper class used by Boost to serialize the model. Must be placed
@@ -113,43 +130,14 @@ class Model {
   static constexpr double kCellLaplaceSmoother = 1.0;
   // The k value for laplace smoothing on the class probabilities
   static constexpr double kClassLaplaceSmoother = 1.0;
-  static constexpr char kDarkChar = '#';  // The character for full darkness (1)
-  static constexpr double kDarkValue =
-      1.0;  // The darkness value for the given character
-  static constexpr char kMediumChar =
-      '+';  // The character for half darkness (0.5)
-  static constexpr double kMediumValue =
-      0.5;  // The darkness value for the given character
-
-  /**
-   * @brief Calculates the likelihood score of a given image being a given
-   * class.
-   *
-   * @param image the ImageGrid object to classify
-   * @param classification the test classification
-   * @return double the logged likelihood score
-   */
-  double LikelihoodScore(const ImageGrid& image, int classification) const;
-
-  /**
-   * @brief Calculate the probability of a certain cell being shaded in a given
-   * classification.
-   *
-   * @param coordinate the coordinate of the cell
-   * @param presence the shading level of the cell
-   * @param classification the classification to test
-   * @return double the probability that the given cell is shaded
-   */
-  double GetCellProbability(size_t x, size_t y, double presence,
-                            int classification) const;
-
-  /**
-   * @brief Calculate the probability of an image being a certain class.
-   *
-   * @param classification the class to test
-   * @return double the probability of the image being a part of the given class
-   */
-  double GetClassProbability(int classification) const;
+  // The character for full darkness (1)
+  static constexpr char kDarkChar = '#';  
+  // The darkness value for the given character
+  static constexpr double kDarkValue = 1.0;
+  // The character for half darkness (0.5)
+  static constexpr char kMediumChar = '+';
+  // The darkness value for the given character
+  static constexpr double kMediumValue = 0.5;
 
   /**
    * @brief Reads the training images from a file.
