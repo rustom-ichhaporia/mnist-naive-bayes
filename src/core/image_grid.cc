@@ -1,17 +1,18 @@
 #include "core/image_grid.h"
-#include <iostream>
-#include <string>
-#include <vector>
-#include <map>
-#include <utility>
 
+#include <iostream>
+#include <map>
+#include <string>
+#include <utility>
+#include <vector>
+
+using std::invalid_argument;
+using std::map;
+using std::pair;
 using std::string;
 using std::vector;
 using std::map;
-using std::pair;
-using std::invalid_argument;
 
-using std::map;
 namespace naivebayes {
 
 ImageGrid::ImageGrid() {
@@ -19,33 +20,25 @@ ImageGrid::ImageGrid() {
 }
 
 ImageGrid::ImageGrid(size_t image_length) {
-  if (image_length < 0) {
-    throw invalid_argument("The input size of the image grid was negative, which is invalid.");
-  }
-
   image_height_ = image_length;
 
   // Initializes all square values with 0
-  for (size_t row = 0; row < image_height_; row++) {
-    for (size_t col = 0; col < image_length; col++) {
-      shade_presence_[pair<int, int>(row, col)] = 0;
-    }
-  }
+  shade_grid_ = vector<vector<double>>(image_height_, vector<double>(image_height_, 0));
 }
 
-double ImageGrid::GetValue(const pair<int, int>& coordinate) const{
-  return shade_presence_.at(coordinate);
+double ImageGrid::GetValue(size_t x, size_t y) const {
+  return shade_grid_[x][y];
 }
 
-void ImageGrid::SetValue(const pair<int, int>& coordinate, double probability) {
-  shade_presence_.at(coordinate) = probability;
+void ImageGrid::SetValue(size_t x, size_t y, double probability) {
+  shade_grid_[x][y] = probability;
 }
 
-void ImageGrid::IncrementValue(const pair<int, int>& coordinate, double increment) {
-  shade_presence_.at(coordinate) += increment;
+void ImageGrid::IncrementValue(size_t x, size_t y, double increment) {
+  shade_grid_[x][y] += increment;
 }
 
-map<pair<int, int>, double> ImageGrid::GetGrid() const {
-  return shade_presence_;
+vector<vector<double>> ImageGrid::GetGrid() const {
+  return shade_grid_;
 }
 }  // namespace naivebayes

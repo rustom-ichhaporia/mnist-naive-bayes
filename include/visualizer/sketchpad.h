@@ -1,6 +1,12 @@
 #pragma once
 
 #include "Cinder/gl/gl.h"
+#include <map>
+#include <utility>
+#include <core/image_grid.h>
+using naivebayes::ImageGrid;
+using std::map;
+using std::pair;
 
 namespace naivebayes {
 
@@ -49,6 +55,8 @@ class Sketchpad {
    */
   void Clear();
 
+  ImageGrid GetShades() const;
+
  private:
   glm::vec2 top_left_corner_;
 
@@ -58,6 +66,9 @@ class Sketchpad {
   double pixel_side_length_;
 
   double brush_radius_;
+
+  /** A map of all the pixels' shades, with 1 representing shaded and 0 unshaded */
+  ImageGrid grid_;
 };
 
 }  // namespace visualizer

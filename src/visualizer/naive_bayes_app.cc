@@ -1,4 +1,6 @@
 #include <visualizer/naive_bayes_app.h>
+#include <core/image_grid.h>
+#include <core/model.h>
 
 namespace naivebayes {
 
@@ -8,6 +10,8 @@ NaiveBayesApp::NaiveBayesApp()
     : sketchpad_(glm::vec2(kMargin, kMargin), kImageDimension,
                  kWindowSize - 2 * kMargin) {
   ci::app::setWindowSize((int) kWindowSize, (int) kWindowSize);
+
+  model_.Load(model_path_);
 }
 
 void NaiveBayesApp::draw() {
@@ -35,11 +39,11 @@ void NaiveBayesApp::mouseDrag(ci::app::MouseEvent event) {
 
 void NaiveBayesApp::keyDown(ci::app::KeyEvent event) {
   switch (event.getCode()) {
-    case ci::app::KeyEvent::KEY_RETURN:
-      // ask your classifier to classify the image that's currently drawn on the
-      // sketchpad and update current_prediction_
-      break;
+    case ci::app::KeyEvent::KEY_RETURN: {
+      current_prediction_ = model_.Predict(sketchpad_.GetShades());
 
+      break;
+    }
     case ci::app::KeyEvent::KEY_DELETE:
       sketchpad_.Clear();
       break;
