@@ -8,6 +8,9 @@ It supports:
 - Saving and loading model caches for comparison
 - Unit testing of all main features
 - Real-time classification
+- Printing a confusion matrix for model predictions
+
+The machine learning model used in this program is the Naive Bayes Classification algorithm, which is implemented from scratch without a library in this program. The unit tests are built with the [Catch2](https://github.com/catchorg/Catch2) framework and the model serialization and deserialization are achieved using the [Boost](https://www.boost.org/) C++ library. The GUI is built using [Cinder](https://github.com/cinder/Cinder). 
 
 ## Example
 ![](./samples/output.gif)
