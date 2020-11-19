@@ -6,6 +6,8 @@ It supports:
 - Multiple image sizes
 - Training multiple models on different image sets
 - Saving and loading model caches for comparison
+- Unit testing of all main features
+- Real-time classification
 
 ## Example
 ![](./samples/output.gif)
